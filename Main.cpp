@@ -7,6 +7,7 @@ int main()
 	SimpleGraph graph;
 	graph.GenerateConsistentRandomGraph();
 	
-
+	graph.Dijkstra(0);
+	
 	return 0;
 }
