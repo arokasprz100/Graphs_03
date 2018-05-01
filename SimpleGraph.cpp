@@ -387,3 +387,56 @@ void SimpleGraph::GenerateConsistentRandomGraph()
 	std::cout<<"\n\n";
 }
 
+void SimpleGraph::Dijkstra(int vertice)
+{
+	if(m_representation != 'a')
+		ChangeToAdjacencyMatrix();
+
+	int distances[m_storedRepresentation.size()];
+	bool sptSet[m_storedRepresentation.size()];
+
+	for (unsigned i = 0; i < m_storedRepresentation.size(); ++i)
+	{
+		distances[i] = 999;
+		sptSet[i] = false;
+	}
+
+	distances[vertice] = 0;
+
+	for (unsigned i = 0; i < m_storedRepresentation.size() - 1; ++i)
+	{
+		int indexToNextVertex = FindMinimalDistance(distances, sptSet);
+		sptSet[indexToNextVertex] = true;
+
+		for(unsigned j = 0; j < m_storedRepresentation.size(); ++j)
+		{
+			if(!sptSet[j] && m_weightMatrix[indexToNextVertex][j]
+			&& distances[indexToNextVertex] != 999 
+			&& distances[indexToNextVertex]+m_weightMatrix[indexToNextVertex][j] < distances[j])
+            	
+            	distances[j] = distances[indexToNextVertex] + m_weightMatrix[indexToNextVertex][j];
+		}
+	}
+
+	std::cout<< "Vertex\tDistance" <<std::endl;
+    for (unsigned i = 0; i < m_storedRepresentation.size(); i++)
+      std::cout<< i << '\t' << distances[i] <<std::endl;
+}
+
+int SimpleGraph::FindMinimalDistance(int distances[], bool sptSet[])
+{
+	int min = 999;
+	int minIndex;
+
+	for (unsigned i = 0; i < m_storedRepresentation.size() ; ++i)
+	{
+		if (distances[i] <= min && sptSet[i] == false)
+		{
+			minIndex = i;
+			min = distances[i];
+		}
+	}
+
+	return minIndex;
+}
+
