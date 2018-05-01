@@ -243,7 +243,7 @@ void SimpleGraph::RandomizeSimpleGraph()
 	srand (time(NULL));
 	int rand_a, rand_b, rand_c, rand_d;
 	int temp_b, temp_d;
-	int many_times = 50;
+	int many_times = 1000;
 	bool randomize;
 
 	if(m_representation != 'l')
@@ -254,6 +254,11 @@ void SimpleGraph::RandomizeSimpleGraph()
 		randomize = false;
 		rand_a = rand() % m_storedRepresentation.size();        
 		rand_c = rand() % m_storedRepresentation.size();
+		
+		
+		if (m_storedRepresentation.at(rand_a).size() == 0 || m_storedRepresentation.at(rand_c).size() == 0)
+			continue;
+		
 		rand_b = rand() % m_storedRepresentation.at(rand_a).size();
 		rand_d = rand() % m_storedRepresentation.at(rand_c).size();
 		temp_b = rand_b;
