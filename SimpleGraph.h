@@ -58,6 +58,14 @@ public:
 
 
 	void GenerateConsistentRandomGraph();
+	
+	// Algorytm Dijkstry. Posiadamy dwa zbiory, kosztow i wierzcholkow nie przetworzonych. W kazdym kroku wybiera sie wierzcholek
+	// nie odwiedzony o najmniejszym koszcie. Funckja przyjmuje jeden parametr informujacy o miejscu rozpoczecia algorytmu. 
+	void Dijkstra(int vertice);
+
+	// Funkcja pomocnicza do znalezenia kolejnego wierzcholka o minimalnym koszcie. Wierzcholek ten nie mogl byc przetworzony.
+	int FindMinimalDistance(int distances[], bool sptSet[]);
+
 
 
 private:
