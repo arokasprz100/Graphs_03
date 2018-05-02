@@ -68,6 +68,13 @@ public:
 	// wierzcholka i wypisuje macierz odleglosci na ekran.
 	void CreateDistanceMatrix();
 
+
+	void FindGraphCenter();
+
+
+	void FindGraphMinimaxCenter();
+
+
 private:
 
 	// Funkcja zamieniajaca macierz sasiedztwa na liste sasiedztwa. Tworzy macierz o wymiarze l.wierzcholkow x l.wierzcholkow, wypelnia zerami.
@@ -82,7 +89,11 @@ private:
 	/// Vector of vectors containing stored graph reperesentation
 	std::vector< std::vector <int> > m_storedRepresentation;
 
+	/// Macierz zawierajaca wagi krawedzi
 	std::vector< std::vector <int> > m_weightMatrix;
+
+	/// Macierz zawierajaca odleglosci pomiedzy kazda para wierzcholkow
+	std::vector< std::vector <int> > m_distanceMatrix;
 
 	/// Field representing type of stored graph representation
 	/// It should be equal to one of following characters:

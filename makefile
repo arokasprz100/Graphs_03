@@ -9,7 +9,7 @@ DEP=$(SRC:.cpp=.d)
 
 CXXFLAGS+=$(DEP_FLAGS)
 
-TARG=Exercise_3
+TARG=Exercise_4
 
 
 all: $(TARG) 

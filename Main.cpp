@@ -17,6 +17,7 @@ int main()
 
 	SimpleGraph graph;
 	graph.GenerateConsistentRandomGraph(numberOfVertices, numberOfEdges);
-	graph.CreateDistanceMatrix();
+	graph.FindGraphCenter();
+	graph.FindGraphMinimaxCenter();
 	return 0;
 }

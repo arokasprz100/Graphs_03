@@ -1,7 +1,7 @@
 #include "SimpleGraph.h"
 #include <algorithm>
 #include <stack>
-
+#include <limits.h>
 
 SimpleGraph::SimpleGraph()
 {
@@ -306,4 +306,49 @@ void SimpleGraph::CreateDistanceMatrix()
 			std::cout<<distanceMatrix.at(i).at(j)<<" ";
 		std::cout<<std::endl;
 	}
+	m_distanceMatrix=distanceMatrix;
+}
+
+
+void SimpleGraph::FindGraphCenter()
+{
+	CreateDistanceMatrix();	
+	int min=INT_MAX;
+	int center=-1;
+	for(unsigned i=0; i < m_distanceMatrix.size(); i++)
+	{
+		int sum=0;
+		for(unsigned j=0; j < m_distanceMatrix.size(); j++)
+			sum += m_distanceMatrix[i][j];
+		if(sum < min)
+		{
+			min=sum;
+			center=i;
+		}
+	}
+
+	std::cout<<"Center of the graph: "<<center<<std::endl;
+}
+
+void SimpleGraph::FindGraphMinimaxCenter()
+{
+	CreateDistanceMatrix();	
+	int min=INT_MAX;
+	int minimaxCenter=-1;
+	for(unsigned i=0; i < m_distanceMatrix.size(); i++)
+	{
+		int max=m_distanceMatrix[i][0];
+		for(unsigned j=1; j < m_distanceMatrix.size(); j++)
+		{
+			if(m_distanceMatrix[i][j] > max)
+				max=m_distanceMatrix[i][j];
+		}
+		if(max < min)
+		{
+			min=max;
+			minimaxCenter=i;
+		}
+	}
+
+	std::cout<<"Minimax center of the graph: "<<minimaxCenter<<std::endl;
 }
