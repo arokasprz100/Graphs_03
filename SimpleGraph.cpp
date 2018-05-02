@@ -298,6 +298,7 @@ int SimpleGraph::FindMinimalDistance(int distances[], bool sptSet[])
 void SimpleGraph::CreateDistanceMatrix()
 {
 	std::vector< std::vector <int> > distanceMatrix(m_storedRepresentation.size(), std::vector<int>(m_storedRepresentation.size(), 0));
+	std::cout<<"Distance matrix: "<<std::endl;
 	for(unsigned i=0; i < distanceMatrix.size(); i++)
 	{
 		Dijkstra(i, &distanceMatrix[i]);
