@@ -15,7 +15,6 @@ public:
 	/// about graph. Second one represents type of representation - one of the following:
 	/// - a - adjacency matrix
 	/// - l - adjacency list
-	/// - i - incidence matrix
 	SimpleGraph(std::vector<std::vector<int>> inputFromFile, char typeOfRepresentation);
 
 
@@ -26,7 +25,8 @@ public:
 
 	void PrintWeightMatrix(std::ostream& placeToPrint) const;
 
-
+	/// Function returning character that describes current graph representation
+	/// It can be a, l or i, depending on representation.
 	char GetRepresentation() const;
 
 
@@ -41,23 +41,16 @@ public:
 	void ChangeToAdjacencyList();
 
 
-	// Funkcja generujaca graf losowy G(n, p) o zadanej liczbie wierzcholkow oraz prawdopodobienstwa wystapienia kazdej z krawedzi. 
-	// Drugi argument traktowany jest jako procent. Na podstawie losowanych liczb generuje się nowe polaczenia w grafie.
-	void GenerateRandomGraphBasedOnProbability(int verticesNumber, int probability);
-
+	// Funkcja generujaca graf losowy G(n, l) o zadanej liczbie wierzcholkow oraz gestosci. Jeśli drugi argument jest liczba
+	// ujemna zamieniamy ja na dodatnia, jesli jest mniejszy od 1 traktujemy go jako gestosc (jaka czesc maksymalnej liczby
+	// krawedzi ma sie znalezc w grafie), jesli wiekszy od 1 traktujemy go jako ilosc krawedzi.
 	void GenerateRandomGraphBasedOnDensity(int verticesNumber, double density);
-	
-	// Funkcja randomizuja ulozenie krawedzi w grafie. Zamienia krawedz a-b, c-d na a-d, b-c pozostajac przy tym grafem prostym.
-	// Funkcja operuje na liscie sasiedztwa, sprawdza wpierw warunek czy zamiana nie zaburzy warunkow istnienia grafu prostego, 
-	// nastepnie sprawdza czy juz odpowiednie krawedzie nie instnieja dla uprzednio wylosowanych czterech losowych krawedzi.
-	// Dodaje do listy nowe krawedzie, usuwa stare powiazania i na koncu sortuje i zamienia reprezentache na macierz sasiedztwa.
-	void RandomizeSimpleGraph();
 
 
 	unsigned FindMaxConnectedComponent();
 
 
-	void GenerateConsistentRandomGraph();
+	void GenerateConsistentRandomGraph(int numberOfVertices, int numberOfEdges);
 
 
 private:
@@ -71,10 +64,6 @@ private:
 	void ChangeAdjacencyMatrixToAdjacencyList();
 
 
-	/// This  function counts number of edges in a graph and returns it. 
-	/// Works for every type of representation.
-	int EdgesCounter() const;
-
 	/// Vector of vectors containing stored graph reperesentation
 	std::vector< std::vector <int> > m_storedRepresentation;
 
@@ -84,7 +73,6 @@ private:
 	/// It should be equal to one of following characters:
 	/// - a - adjacency matrix
 	/// - l - adjacency list
-	/// - i - incidence matrix
 	char m_representation;
 
 };
