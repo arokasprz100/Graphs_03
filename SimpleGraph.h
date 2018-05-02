@@ -49,9 +49,24 @@ public:
 
 	unsigned FindMaxConnectedComponent();
 
-
+	// Funkcja generujaca losowy graf spojny, o zadanej liczbie wierzcholkow i krawedzi podanej przez uzytkownika. Generujemy graf dopoki nie
+	// wygenerujemy grafu spojnego.
 	void GenerateConsistentRandomGraph(int numberOfVertices, int numberOfEdges);
 
+
+	// Algorytm Dijkstry. Posiadamy dwa zbiory, kosztow i wierzcholkow nie przetworzonych. W kazdym kroku wybiera sie wierzcholek
+	// nie odwiedzony o najmniejszym koszcie. Funckja przyjmuje dwa parametry: pierwszy informujacy o miejscu rozpoczecia algorytmu,
+	// a drugi to wskaźnik do wektora odleglosci w ktorym bedziemy zapisywac odleglosci od zadanego wierzcholka. W zadaniu 3 (wskaznik rozny od 0)
+	// nie wypisujemy zadnej informacji na ekran, jedynie zapisujemy odleglosci do wektora odelglosci.
+	void Dijkstra(int vertice, std::vector <int>* distanceVector = 0);
+
+	// Funkcja pomocnicza do znalezenia kolejnego wierzcholka o minimalnym koszcie. Wierzcholek ten nie mogl byc przetworzony.
+	int FindMinimalDistance(int distances[], bool sptSet[]);
+
+
+	// Funkcja tworzaca macierz odleglosci pomiedzy wszystkimi parami wierzcholkow na tym grafie. Wykorzystuje algorytm Dijkstry dla kazdego
+	// wierzcholka i wypisuje macierz odleglosci na ekran.
+	void CreateDistanceMatrix();
 
 private:
 

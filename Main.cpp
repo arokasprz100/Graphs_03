@@ -17,7 +17,6 @@ int main()
 
 	SimpleGraph graph;
 	graph.GenerateConsistentRandomGraph(numberOfVertices, numberOfEdges);
-	
-
+	graph.CreateDistanceMatrix();
 	return 0;
 }
