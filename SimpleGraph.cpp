@@ -306,4 +306,5 @@ void SimpleGraph::CreateDistanceMatrix()
 			std::cout<<distanceMatrix.at(i).at(j)<<" ";
 		std::cout<<std::endl;
 	}
+	m_distanceMatrix=distanceMatrix;
 }
