@@ -64,9 +64,10 @@ public:
 	void Dijkstra(int vertice);
 
 	// Funkcja pomocnicza do znalezenia kolejnego wierzcholka o minimalnym koszcie. Wierzcholek ten nie mogl byc przetworzony.
-	int FindMinimalDistance(int distances[], bool sptSet[]);
-
-
+	int FindMinimalDistance(int distances[], bool visitedVertices[]);
+	
+	// Funkcja pomocnicza do wypisania pelnej siezki od zrodla. Opiera sie na rekurencji.
+	void PrintDijkstraPath(int predecessors[], int parentIndex);
 
 private:
 
