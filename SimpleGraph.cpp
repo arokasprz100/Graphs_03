@@ -393,44 +393,63 @@ void SimpleGraph::Dijkstra(int vertice)
 		ChangeToAdjacencyMatrix();
 
 	int distances[m_storedRepresentation.size()];
-	bool sptSet[m_storedRepresentation.size()];
+	int predecessors[m_storedRepresentation.size()];
+	bool visitedVertices[m_storedRepresentation.size()];
 
 	for (unsigned i = 0; i < m_storedRepresentation.size(); ++i)
 	{
 		distances[i] = 999;
-		sptSet[i] = false;
+		predecessors[i] = -1;
+		visitedVertices[i] = false;
 	}
 
 	distances[vertice] = 0;
 
 	for (unsigned i = 0; i < m_storedRepresentation.size() - 1; ++i)
 	{
-		int indexToNextVertex = FindMinimalDistance(distances, sptSet);
-		sptSet[indexToNextVertex] = true;
+		int indexToNextVertex = FindMinimalDistance(distances, visitedVertices);
+		visitedVertices[indexToNextVertex] = true;
 
 		for(unsigned j = 0; j < m_storedRepresentation.size(); ++j)
 		{
-			if(!sptSet[j] && m_weightMatrix[indexToNextVertex][j]
+			if(!visitedVertices[j] && m_weightMatrix[indexToNextVertex][j]
 			&& distances[indexToNextVertex] != 999 
 			&& distances[indexToNextVertex]+m_weightMatrix[indexToNextVertex][j] < distances[j])
+			{
             	
             	distances[j] = distances[indexToNextVertex] + m_weightMatrix[indexToNextVertex][j];
+            	predecessors[j] = indexToNextVertex;
+            }
 		}
 	}
 
-	std::cout<< "Vertex\tDistance" <<std::endl;
+
+	std::cout<<"Predecessors Array"<<std::endl;
+
+	for (unsigned i = 0; i < m_storedRepresentation.size(); ++i)
+	{
+		std::cout<< " "<< predecessors[i];
+	}
+
+	std::cout<<std::endl;
+
+	std::cout<< "Vertex\tDistance  Path" <<std::endl;
     for (unsigned i = 0; i < m_storedRepresentation.size(); i++)
-      std::cout<< i << '\t' << distances[i] <<std::endl;
+    {
+    	std::cout<< i << '\t' << distances[i];
+    	PrintDijkstraPath(predecessors, i);
+    	std::cout<<std::endl;
+    }	
 }
 
-int SimpleGraph::FindMinimalDistance(int distances[], bool sptSet[])
+int SimpleGraph::FindMinimalDistance(int distances[], bool visitedVertices[])
 {
 	int min = 999;
 	int minIndex;
 
 	for (unsigned i = 0; i < m_storedRepresentation.size() ; ++i)
 	{
-		if (distances[i] <= min && sptSet[i] == false)
+		if (distances[i] <= min && visitedVertices[i] == false)
 		{
 			minIndex = i;
 			min = distances[i];
@@ -440,3 +459,14 @@ int SimpleGraph::FindMinimalDistance(int distances[], bool sptSet[])
 	return minIndex;
 }
 
+void SimpleGraph::PrintDijkstraPath(int predecessors[], int parentIndex)
+{
+    if (predecessors[parentIndex] == -1)
+    	{
+    		std::cout<<"	  "<<parentIndex<<" ";
+    		return;
+    	} 
+ 
+    PrintDijkstraPath(predecessors, predecessors[parentIndex]);
+    	std::cout<<parentIndex<< " ";
+}
