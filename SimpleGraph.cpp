@@ -351,4 +351,5 @@ void SimpleGraph::FindGraphMinimaxCenter()
 	}
 
 	std::cout<<"Minimax center of the graph: "<<minimaxCenter<<std::endl;
+
 }

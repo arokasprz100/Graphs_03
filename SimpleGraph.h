@@ -101,6 +101,7 @@ private:
 	/// - l - adjacency list
 	char m_representation;
 
+
 };
 
 
