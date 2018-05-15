@@ -19,5 +19,11 @@ int main()
 	graph.GenerateConsistentRandomGraph(numberOfVertices, numberOfEdges);
 	graph.FindGraphCenter();
 	graph.FindGraphMinimaxCenter();
+	
+	graph.Dijkstra(0);
+	
+	/// prototype
+	//graph.Prime();
+
 	return 0;
 }

@@ -1,7 +1,12 @@
 #include "SimpleGraph.h"
 #include <algorithm>
 #include <stack>
+#include <queue>
+#include <set>
+#include <vector>
 #include <limits.h>
+#include <utility>
+
 
 SimpleGraph::SimpleGraph()
 {
@@ -177,6 +182,90 @@ void SimpleGraph::GenerateRandomGraphBasedOnDensity(int verticesNumber, double d
 }
 
 
+void SimpleGraph::RandomizeSimpleGraph()
+{
+	srand (time(NULL));
+	int rand_a, rand_b, rand_c, rand_d;
+	int temp_b, temp_d;
+	int many_times = 1000;
+	bool randomize;
+
+	if(m_representation != 'l')
+		ChangeToAdjacencyList();
+
+	for(int i = 0; i < many_times; i++)
+	{
+		randomize = false;
+		rand_a = rand() % m_storedRepresentation.size();        
+		rand_c = rand() % m_storedRepresentation.size();
+		
+		
+		if (m_storedRepresentation.at(rand_a).size() == 0 || m_storedRepresentation.at(rand_c).size() == 0)
+			continue;
+		
+		rand_b = rand() % m_storedRepresentation.at(rand_a).size();
+		rand_d = rand() % m_storedRepresentation.at(rand_c).size();
+		temp_b = rand_b;
+		temp_d = rand_d;
+		rand_b = m_storedRepresentation[rand_a][rand_b];
+		rand_d = m_storedRepresentation[rand_c][rand_d];
+		rand_a += 1;
+		rand_c += 1;
+
+
+		if( (rand_a != rand_d) && (rand_b != rand_c) ) randomize = true;
+
+		for(unsigned j = 0; j < m_storedRepresentation.at(rand_a-1).size(); j++)
+		{
+			if(m_storedRepresentation[rand_a-1][j] == rand_d) randomize = false;
+		}
+
+		for(unsigned j = 0; j < m_storedRepresentation.at(rand_b-1).size(); j++)
+		{
+			if(m_storedRepresentation[rand_b-1][j] == rand_c) randomize = false;
+		}
+
+
+		if(randomize)
+		{
+		 	m_storedRepresentation.at(rand_a-1).push_back(rand_d);
+		 	m_storedRepresentation.at(rand_d-1).push_back(rand_a);
+		 	m_storedRepresentation.at(rand_b-1).push_back(rand_c);
+		 	m_storedRepresentation.at(rand_c-1).push_back(rand_b);
+		
+		 	m_storedRepresentation.at(rand_a-1).erase(m_storedRepresentation.at(rand_a-1).begin()+temp_b);
+		 	m_storedRepresentation.at(rand_c-1).erase(m_storedRepresentation.at(rand_c-1).begin()+temp_d);
+		 
+		 	for(unsigned j = 0; j < m_storedRepresentation.at(rand_b-1).size(); j++)
+		 	{
+		 	 	if(m_storedRepresentation[rand_b-1][j] == rand_a)
+		 	 		m_storedRepresentation.at(rand_b-1).erase(m_storedRepresentation.at(rand_b-1).begin()+j);
+		 	}
+		 	
+		 	for(unsigned j = 0; j < m_storedRepresentation.at(rand_d-1).size(); j++)
+		 	{
+		 		if(m_storedRepresentation[rand_d-1][j] == rand_c)
+		 			m_storedRepresentation.at(rand_d-1).erase(m_storedRepresentation.at(rand_d-1).begin()+j);
+		 	}
+		 	
+			for(unsigned j = 0; j < m_storedRepresentation.size(); ++j)
+			{
+				std::sort(m_storedRepresentation.at(j).begin(), m_storedRepresentation.at(j).end(), [](const int a, const int b) {return a > b; });
+			}
+
+
+			m_weightMatrix[rand_a-1][rand_d-1]=m_weightMatrix[rand_a-1][rand_b-1];
+			m_weightMatrix[rand_d-1][rand_a-1]=m_weightMatrix[rand_a-1][rand_b-1];
+			m_weightMatrix[rand_c-1][rand_b-1]=m_weightMatrix[rand_c-1][rand_d-1];
+			m_weightMatrix[rand_b-1][rand_c-1]=m_weightMatrix[rand_c-1][rand_d-1];
+			m_weightMatrix[rand_a-1][rand_b-1]=0;
+			m_weightMatrix[rand_b-1][rand_a-1]=0;
+			m_weightMatrix[rand_c-1][rand_d-1]=0;
+			m_weightMatrix[rand_d-1][rand_c-1]=0;
+		 }
+	}
+	ChangeToAdjacencyMatrix();
+}
 
 unsigned SimpleGraph::FindMaxConnectedComponent()
 {
@@ -233,58 +322,78 @@ void SimpleGraph::GenerateConsistentRandomGraph(int numberOfVertices, int number
 
 	PrintWeightMatrix(std::cout);
 	std::cout<<"\n\n";
+
+	for (unsigned i =0; i<m_storedRepresentation.size(); ++i)
+		m_distanceMatrix.emplace_back(std::vector<int>(m_storedRepresentation.size()));
 }
 
 
-void SimpleGraph::Dijkstra(int vertice, std::vector <int>* distanceVector)
+void SimpleGraph::Dijkstra(int vertice, bool print)
 {
 	if(m_representation != 'a')
 		ChangeToAdjacencyMatrix();
 
 	int distances[m_storedRepresentation.size()];
-	bool sptSet[m_storedRepresentation.size()];
+	int predecessors[m_storedRepresentation.size()];
+	bool visitedVertices[m_storedRepresentation.size()];
 
 	for (unsigned i = 0; i < m_storedRepresentation.size(); ++i)
 	{
 		distances[i] = 999;
-		sptSet[i] = false;
+		predecessors[i] = -1;
+		visitedVertices[i] = false;
 	}
 
 	distances[vertice] = 0;
 
 	for (unsigned i = 0; i < m_storedRepresentation.size() - 1; ++i)
 	{
-		int indexToNextVertex = FindMinimalDistance(distances, sptSet);
-		sptSet[indexToNextVertex] = true;
+		int indexToNextVertex = FindMinimalDistance(distances, visitedVertices);
+		visitedVertices[indexToNextVertex] = true;
+
 
 		for(unsigned j = 0; j < m_storedRepresentation.size(); ++j)
 		{
-			if(!sptSet[j] && m_weightMatrix[indexToNextVertex][j]
+			if(!visitedVertices[j] && m_weightMatrix[indexToNextVertex][j]
 			&& distances[indexToNextVertex] != 999 
 			&& distances[indexToNextVertex]+m_weightMatrix[indexToNextVertex][j] < distances[j])
+			{
             	
             	distances[j] = distances[indexToNextVertex] + m_weightMatrix[indexToNextVertex][j];
-		}
+            	predecessors[j] = indexToNextVertex;
+            }
+        }
 	}
-	if(distanceVector==0)
-		std::cout<< "Vertex\tDistance" <<std::endl;
+
+	if (!print)
+		return;
+
+	std::cout<<"Predecessors Array"<<std::endl;
+	for (unsigned i = 0; i < m_storedRepresentation.size(); ++i)
+		std::cout<< " "<< predecessors[i];
+
+	std::cout<<std::endl;
+
+	std::cout<< "Vertex\tDistance  Path" <<std::endl;
     for (unsigned i = 0; i < m_storedRepresentation.size(); i++)
     {
-    	if(distanceVector==0)
-     		std::cout<< i << '\t' << distances[i] <<std::endl;
-     	else
-     	(*distanceVector)[i]=distances[i];
-    }
+    	std::cout<< i << '\t' << distances[i];
+    	PrintDijkstraPath(predecessors, i);
+    	std::cout<<std::endl;
+    	m_distanceMatrix.at(vertice).at(i) = (distances[i]);
+    }	
+
 }
 
-int SimpleGraph::FindMinimalDistance(int distances[], bool sptSet[])
+int SimpleGraph::FindMinimalDistance(int distances[], bool visitedVertices[])
+
 {
 	int min = 999;
 	int minIndex;
 
 	for (unsigned i = 0; i < m_storedRepresentation.size() ; ++i)
 	{
-		if (distances[i] <= min && sptSet[i] == false)
+		if (distances[i] <= min && visitedVertices[i] == false)
 		{
 			minIndex = i;
 			min = distances[i];
@@ -297,16 +406,14 @@ int SimpleGraph::FindMinimalDistance(int distances[], bool sptSet[])
 
 void SimpleGraph::CreateDistanceMatrix()
 {
-	std::vector< std::vector <int> > distanceMatrix(m_storedRepresentation.size(), std::vector<int>(m_storedRepresentation.size(), 0));
 	std::cout<<"Distance matrix: "<<std::endl;
-	for(unsigned i=0; i < distanceMatrix.size(); i++)
+	for(unsigned i=0; i < m_distanceMatrix.size(); i++)
 	{
-		Dijkstra(i, &distanceMatrix[i]);
-		for(unsigned j=0; j < distanceMatrix.size(); j++)
-			std::cout<<distanceMatrix.at(i).at(j)<<" ";
+		Dijkstra(i, false);
+		for(unsigned j=0; j < m_distanceMatrix.size(); j++)
+			std::cout<<m_distanceMatrix.at(i).at(j)<<" ";
 		std::cout<<std::endl;
 	}
-	m_distanceMatrix=distanceMatrix;
 }
 
 
@@ -351,5 +458,76 @@ void SimpleGraph::FindGraphMinimaxCenter()
 	}
 
 	std::cout<<"Minimax center of the graph: "<<minimaxCenter<<std::endl;
+}
+
+
+
+void SimpleGraph::PrintDijkstraPath(int predecessors[], int parentIndex)
+{
+    if (predecessors[parentIndex] == -1)
+    	{
+    		std::cout<<"	  "<<parentIndex<<" ";
+    		return;
+    	} 
+ 
+    PrintDijkstraPath(predecessors, predecessors[parentIndex]);
+    	std::cout<<parentIndex<< " ";
+}
+
+
+//// JUST PROTOTYPE - FIX IT LATER
+void SimpleGraph::Prime()
+{
+	ChangeToAdjacencyMatrix();
+
+	typedef std::pair<int, std::pair<int, int>> edgeType ;
+
+	std::priority_queue<edgeType, std::vector<edgeType>, std::greater<edgeType>> Queue;
+	std::vector<bool> visited (m_storedRepresentation.size(), false);
+	std::set<std::pair<int, std::pair<int, int>>> T;
+
+	int vertex = 0;
+	visited.at(vertex) = true;
+
+	PrintWeightMatrix(std::cout);
+
+	for (unsigned i = 1; i<m_storedRepresentation.size(); ++i)
+	{
+		for (unsigned j = i+1; j<m_storedRepresentation.at(i).size(); ++j)
+		{
+			if (m_storedRepresentation.at(i).at(j) != 0)
+			{
+				if (visited[j] == false)
+					Queue.push(std::make_pair(m_weightMatrix.at(i).at(j), std::make_pair(i, j)));
+			}
+		}
+
+		std::cout<<"Here"<< i<<std::endl;
+
+		edgeType edge;
+
+		do{
+			if (!Queue.empty())
+			{
+				edge = Queue.top();
+				Queue.pop();
+			}
+			else
+				break;
+			std::cout<<"Stuck?"<<std::endl;
+		}while (visited[edge.second.second] == true);
+
+		T.insert(edge);
+
+		visited.at(edge.second.second) = true;
+
+		vertex = edge.second.second;
+
+	}
+
+	for (auto elem : T)
+		std::cout<<elem.first<<" ";
+
+	std::cout<<std::endl;
 
 }
