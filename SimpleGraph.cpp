@@ -8,11 +8,6 @@
 #include <utility>
 
 
-SimpleGraph::SimpleGraph()
-{
-}
-
-
 SimpleGraph::SimpleGraph(std::vector<std::vector<int>> inputFromFile, char typeOfRepresentation)
 {
 	m_storedRepresentation = inputFromFile;
@@ -317,73 +312,10 @@ void SimpleGraph::GenerateConsistentRandomGraph(int numberOfVertices, int number
 		GenerateRandomGraphBasedOnDensity(numberOfVertices, numberOfEdges);
 	}
 
-	PrintGraph(std::cout);
-	std::cout<<"\n\n";
-
-	PrintWeightMatrix(std::cout);
-	std::cout<<"\n\n";
-
 	for (unsigned i =0; i<m_storedRepresentation.size(); ++i)
 		m_distanceMatrix.emplace_back(std::vector<int>(m_storedRepresentation.size()));
 }
 
-
-void SimpleGraph::Dijkstra(int vertice, bool print)
-{
-	if(m_representation != 'a')
-		ChangeToAdjacencyMatrix();
-
-	int distances[m_storedRepresentation.size()];
-	int predecessors[m_storedRepresentation.size()];
-	bool visitedVertices[m_storedRepresentation.size()];
-
-	for (unsigned i = 0; i < m_storedRepresentation.size(); ++i)
-	{
-		distances[i] = 999;
-		predecessors[i] = -1;
-		visitedVertices[i] = false;
-	}
-
-	distances[vertice] = 0;
-
-	for (unsigned i = 0; i < m_storedRepresentation.size() - 1; ++i)
-	{
-		int indexToNextVertex = FindMinimalDistance(distances, visitedVertices);
-		visitedVertices[indexToNextVertex] = true;
-
-
-		for(unsigned j = 0; j < m_storedRepresentation.size(); ++j)
-		{
-			if(!visitedVertices[j] && m_weightMatrix[indexToNextVertex][j]
-			&& distances[indexToNextVertex] != 999 
-			&& distances[indexToNextVertex]+m_weightMatrix[indexToNextVertex][j] < distances[j])
-			{
-            	
-            	distances[j] = distances[indexToNextVertex] + m_weightMatrix[indexToNextVertex][j];
-            	predecessors[j] = indexToNextVertex;
-            }
-        }
-	}
-
-	if (!print)
-		return;
-
-	std::cout<<"Predecessors Array"<<std::endl;
-	for (unsigned i = 0; i < m_storedRepresentation.size(); ++i)
-		std::cout<< " "<< predecessors[i];
-
-	std::cout<<std::endl;
-
-	std::cout<< "Vertex\tDistance  Path" <<std::endl;
-    for (unsigned i = 0; i < m_storedRepresentation.size(); i++)
-    {
-    	std::cout<< i << '\t' << distances[i];
-    	PrintDijkstraPath(predecessors, i);
-    	std::cout<<std::endl;
-    	m_distanceMatrix.at(vertice).at(i) = (distances[i]);
-    }	
-
-}
 
 int SimpleGraph::FindMinimalDistance(int distances[], bool visitedVertices[])
 
@@ -460,6 +392,64 @@ void SimpleGraph::FindGraphMinimaxCenter()
 	std::cout<<"Minimax center of the graph: "<<minimaxCenter<<std::endl;
 }
 
+void SimpleGraph::Dijkstra(int vertice, bool print)
+{
+	if(m_representation != 'a')
+		ChangeToAdjacencyMatrix();
+
+	int distances[m_storedRepresentation.size()];
+	int predecessors[m_storedRepresentation.size()];
+	bool visitedVertices[m_storedRepresentation.size()];
+
+	for (unsigned i = 0; i < m_storedRepresentation.size(); ++i)
+	{
+		distances[i] = 999;
+		predecessors[i] = -1;
+		visitedVertices[i] = false;
+	}
+
+	distances[vertice] = 0;
+
+	for (unsigned i = 0; i < m_storedRepresentation.size() - 1; ++i)
+	{
+		int indexToNextVertex = FindMinimalDistance(distances, visitedVertices);
+		visitedVertices[indexToNextVertex] = true;
+
+
+		for(unsigned j = 0; j < m_storedRepresentation.size(); ++j)
+		{
+			if(!visitedVertices[j] && m_weightMatrix[indexToNextVertex][j]
+			&& distances[indexToNextVertex] != 999 
+			&& distances[indexToNextVertex]+m_weightMatrix[indexToNextVertex][j] < distances[j])
+			{
+            	
+            	distances[j] = distances[indexToNextVertex] + m_weightMatrix[indexToNextVertex][j];
+            	predecessors[j] = indexToNextVertex;
+            }
+        }
+	}
+
+    for (unsigned i = 0; i < m_storedRepresentation.size(); i++)
+    	m_distanceMatrix.at(vertice).at(i) = (distances[i]);
+
+	if (!print)
+		return;
+
+	std::cout<<"Predecessors Array"<<std::endl;
+	for (unsigned i = 0; i < m_storedRepresentation.size(); ++i)
+		std::cout<< " "<< predecessors[i];
+
+	std::cout<<std::endl;
+
+	std::cout<< "Vertex\tDistance  Path" <<std::endl;
+    for (unsigned i = 0; i < m_storedRepresentation.size(); i++)
+    {
+    	std::cout<< i << '\t' << distances[i];
+    	PrintDijkstraPath(predecessors, i);
+    	std::cout<<std::endl;
+    }	
+
+}
 
 
 void SimpleGraph::PrintDijkstraPath(int predecessors[], int parentIndex)
@@ -475,59 +465,56 @@ void SimpleGraph::PrintDijkstraPath(int predecessors[], int parentIndex)
 }
 
 
-//// JUST PROTOTYPE - FIX IT LATER
-void SimpleGraph::Prime()
+void SimpleGraph::Prim()
 {
-	ChangeToAdjacencyMatrix();
+	ChangeToAdjacencyList();
 
-	typedef std::pair<int, std::pair<int, int>> edgeType ;
+	typedef std::pair<int, std::pair<int, int>> edgeType;
 
-	std::priority_queue<edgeType, std::vector<edgeType>, std::greater<edgeType>> Queue;
-	std::vector<bool> visited (m_storedRepresentation.size(), false);
-	std::set<std::pair<int, std::pair<int, int>>> T;
+	std::set <edgeType> MST;
+	std::vector<bool> verticesInMST(m_storedRepresentation.size(), false);
 
-	int vertex = 0;
-	visited.at(vertex) = true;
+	verticesInMST.at(0) = true;
 
-	PrintWeightMatrix(std::cout);
-
-	for (unsigned i = 1; i<m_storedRepresentation.size(); ++i)
+	while (true)
 	{
-		for (unsigned j = i+1; j<m_storedRepresentation.at(i).size(); ++j)
+		edgeType minEdge =  std::make_pair(INT_MAX, std::make_pair(-1,-1));
+		for (unsigned i = 0; i<verticesInMST.size(); ++i)
 		{
-			if (m_storedRepresentation.at(i).at(j) != 0)
+			if (verticesInMST.at(i) == false)
+				continue;
+			for (unsigned j =0; j<m_storedRepresentation.at(i).size(); ++j)
 			{
-				if (visited[j] == false)
-					Queue.push(std::make_pair(m_weightMatrix.at(i).at(j), std::make_pair(i, j)));
-			}
+				if (verticesInMST.at(m_storedRepresentation.at(i).at(j) - 1) == true)
+					continue;
+				edgeType edge = std::make_pair(m_weightMatrix.at(i).at(m_storedRepresentation.at(i).at(j) - 1), std::make_pair(i, m_storedRepresentation.at(i).at(j) - 1));
+				edgeType revEdge =  std::make_pair(m_weightMatrix.at(i).at(m_storedRepresentation.at(i).at(j) - 1), std::make_pair(m_storedRepresentation.at(i).at(j)-1, i));
+
+				auto search = MST.find(edge);
+				auto search2 = MST.find(revEdge);
+				if (search == MST.end() && search2 == MST.end())
+				{
+					if (edge.first < minEdge.first)
+						minEdge = edge;
+				}				
+			}		
 		}
+		verticesInMST.at(minEdge.second.first) = true;
+		verticesInMST.at(minEdge.second.second) = true;
+		MST.insert(minEdge);
 
-		std::cout<<"Here"<< i<<std::endl;
+		bool stop = true;
 
-		edgeType edge;
+		for (unsigned i = 0; i<m_storedRepresentation.size(); ++i)
+			if (verticesInMST.at(i) == false)
+				stop = false;
 
-		do{
-			if (!Queue.empty())
-			{
-				edge = Queue.top();
-				Queue.pop();
-			}
-			else
-				break;
-			std::cout<<"Stuck?"<<std::endl;
-		}while (visited[edge.second.second] == true);
-
-		T.insert(edge);
-
-		visited.at(edge.second.second) = true;
-
-		vertex = edge.second.second;
-
+		if (stop)
+			break;
 	}
 
-	for (auto elem : T)
-		std::cout<<elem.first<<" ";
-
-	std::cout<<std::endl;
+	std::cout<<"Edges in MST: "<<std::endl;
+	for (auto elem : MST)
+		std::cout<<elem.first<<": ("<<elem.second.first<<","<<elem.second.second<<")"<<std::endl;
 
 }

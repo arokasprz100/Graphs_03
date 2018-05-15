@@ -7,9 +7,8 @@
 class SimpleGraph final  
 {
 public:
-
-	SimpleGraph();
-
+	/// Empty constructor. 
+	SimpleGraph() {};
 
 	/// Simple graph constructor. First argument represents input received from file that stores data 
 	/// about graph. Second one represents type of representation - one of the following:
@@ -17,18 +16,15 @@ public:
 	/// - l - adjacency list
 	SimpleGraph(std::vector<std::vector<int>> inputFromFile, char typeOfRepresentation);
 
-
 	/// This function prints graph informations to specified by argument place
 	/// It can be for example file or standard output 
 	void PrintGraph(std::ostream& placeToPrint) const ;
-
 
 	void PrintWeightMatrix(std::ostream& placeToPrint) const;
 
 	/// Function returning character that describes current graph representation
 	/// It can be a, l or i, depending on representation.
 	char GetRepresentation() const;
-
 
 	// Funkcja zamieniajaca reprezentacje grafu przechowywana przez obiekt klasy SimpleGraph na macierz sąsiedztwa. W zaleznosci w jakiej
 	// reprezentacji jest graf funkcja wywoluje inna funkcje zamieniajaca, lub wypisuje informacje ze graf jest juz
@@ -40,12 +36,10 @@ public:
 	// w tej reprezentacji. 
 	void ChangeToAdjacencyList();
 
-
 	// Funkcja generujaca graf losowy G(n, l) o zadanej liczbie wierzcholkow oraz gestosci. Jeśli drugi argument jest liczba
 	// ujemna zamieniamy ja na dodatnia, jesli jest mniejszy od 1 traktujemy go jako gestosc (jaka czesc maksymalnej liczby
 	// krawedzi ma sie znalezc w grafie), jesli wiekszy od 1 traktujemy go jako ilosc krawedzi.
 	void GenerateRandomGraphBasedOnDensity(int verticesNumber, double density);
-
 
 	void RandomizeSimpleGraph();
 
@@ -55,13 +49,6 @@ public:
 	// wygenerujemy grafu spojnego.
 	void GenerateConsistentRandomGraph(int numberOfVertices, int numberOfEdges);
 
-
-	// Algorytm Dijkstry. Posiadamy dwa zbiory, kosztow i wierzcholkow nie przetworzonych. W kazdym kroku wybiera sie wierzcholek
-	// nie odwiedzony o najmniejszym koszcie. Funckja przyjmuje dwa parametry: pierwszy informujacy o miejscu rozpoczecia algorytmu,
-	// a drugi to wskaźnik do wektora odleglosci w ktorym bedziemy zapisywac odleglosci od zadanego wierzcholka. W zadaniu 3 (wskaznik rozny od 0)
-	// nie wypisujemy zadnej informacji na ekran, jedynie zapisujemy odleglosci do wektora odelglosci.
-	//void Dijkstra(int vertice, std::vector <int>* distanceVector = 0);
-
 	// Funkcja tworzaca macierz odleglosci pomiedzy wszystkimi parami wierzcholkow na tym grafie. Wykorzystuje algorytm Dijkstry dla kazdego
 	// wierzcholka i wypisuje macierz odleglosci na ekran.
 	void CreateDistanceMatrix();
@@ -70,9 +57,11 @@ public:
 
 	void FindGraphMinimaxCenter();
 
-	void Prime();
+	/// Podstawowa implementacja algorytmu Prima znajdowania minimalnego drzewa rozpinajacego. Funkcja ta wykonuje wszystkie potrzebne obliczenia
+	/// oraz wypisuje wynik na ekran. Algorytm ten jest algorytmem zachlannym, jego dzialanie polega na stworzeniu drzewa oraz dodawaniu do niego
+	/// krawedzi aktualnie sasiadujacych z drzewem o najmniejszej wadze. Algorytm konczy sie, gdy drzewo laczy wszystkie wierzcholki.
+	void Prim();
 
-	
 	// Algorytm Dijkstry. Posiadamy dwa zbiory, kosztow i wierzcholkow nie przetworzonych. W kazdym kroku wybiera sie wierzcholek
 	// nie odwiedzony o najmniejszym koszcie. Funckja przyjmuje jeden parametr informujacy o miejscu rozpoczecia algorytmu. 
 	void Dijkstra(int vertice, bool print = true);
